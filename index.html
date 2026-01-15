@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revue de Presse Médicale – Décembre 2025</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #111113;
+            --bg-tertiary: #1a1a1d;
+            --text-primary: #f5f5f7;
+            --text-secondary: #8e8e93;
+            --text-muted: #48484a;
+            --accent: #ff6b35;
+            --accent-dim: rgba(255, 107, 53, 0.15);
+            --accent-glow: rgba(255, 107, 53, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        /* Noise texture overlay - REMOVED FOR PURE BLACK BACKGROUND */
+        /* body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1000;
+        } */
+
+        .presentation-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Navigation sidebar */
+        .nav-sidebar {
+            width: 280px;
+            min-width: 280px;
+            height: 100%;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--bg-tertiary);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        .nav-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--bg-tertiary);
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-header .month {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .nav-chapters {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 1rem;
+        }
+
+        .nav-chapter {
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-chapter:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .nav-chapter.active {
+            background: var(--accent-dim);
+        }
+
+        .nav-chapter.active .chapter-indicator {
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .nav-chapter.active .chapter-name {
+            color: var(--text-primary);
+        }
+
+        .chapter-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .chapter-name {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+            line-height: 1.4;
+        }
+
+        /* Main content area */
+        .slides-container {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Slide counter */
+        .slide-counter {
+            position: absolute;
+            top: 2rem;
+            right: 2.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            z-index: 100;
+        }
+
+        .slide-counter .current {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Slides wrapper */
+        .slides-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 4rem;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Slide styles */
+        .slide-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 600;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .slide-title .accent {
+            color: var(--accent);
+        }
+
+        .slide-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 650px;
+        }
+
+        .slide-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .slide-label::before {
+            content: '';
+            width: 20px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        /* Big number style */
+        .big-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin: 1rem 0;
+            letter-spacing: -0.04em;
+        }
+
+        .big-number-unit {
+            font-size: 2.5rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-left: 0.25rem;
+        }
+
+        .big-number-label {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Comparison layout */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .comparison-item {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--bg-tertiary);
+        }
+
+        .comparison-item.highlight {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+        }
+
+        .comparison-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .comparison-item.highlight .comparison-value {
+            color: var(--accent);
+        }
+
+        .comparison-label {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        /* List style */
+        .slide-list {
+            list-style: none;
+            margin-top: 2rem;
+        }
+
+        .slide-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .slide-list li:last-child {
+            border-bottom: none;
+        }
+
+        .list-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent);
+            min-width: 24px;
+        }
+
+        .list-content {
+            flex: 1;
+        }
+
+        .list-content strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .list-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Hierarchy visual */
+        .hierarchy-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .hierarchy-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            border-left: 3px solid var(--bg-tertiary);
+            transition: all 0.2s ease;
+        }
+
+        .hierarchy-item.primary {
+            background: var(--accent-dim);
+            border-left-color: var(--accent);
+        }
+
+        .hierarchy-item.secondary {
+            opacity: 0.7;
+            margin-left: 2rem;
+        }
+
+        .hierarchy-item.tertiary {
+            opacity: 0.5;
+            margin-left: 4rem;
+        }
+
+        .hierarchy-rank {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 40px;
+        }
+
+        .hierarchy-item.primary .hierarchy-rank {
+            color: var(--accent);
+        }
+
+        .hierarchy-name {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .hierarchy-item.secondary .hierarchy-name,
+        .hierarchy-item.tertiary .hierarchy-name {
+            color: var(--text-secondary);
+        }
+
+        /* Icon box */
+        .icon-box {
+            width: 56px;
+            height: 56px;
+            background: var(--accent-dim);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .icon-box svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--accent);
+        }
+
+        /* Stats row */
+        .stats-row {
+            display: flex;
+            gap: 3rem;
+            margin-top: 2.5rem;
+        }
+
+        .stat-item {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Quote style */
+        .quote-block {
+            border-left: 3px solid var(--accent);
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .quote-source {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.75rem;
+        }
+
+        /* Timeline style */
+        .timeline {
+            margin-top: 2rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem 0;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 3.5rem;
+            bottom: -0.5rem;
+            width: 2px;
+            background: var(--bg-tertiary);
+        }
+
+        .timeline-marker {
+            width: 24px;
+            height: 24px;
+            background: var(--accent-dim);
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-content h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.35rem;
+        }
+
+        .timeline-content p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Card grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.8rem;
+            background: var(--accent-dim);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        /* Keyboard hint */
+        .keyboard-hint {
+            position: absolute;
+            bottom: 2rem;
+            right: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .key {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        /* Title slide special */
+        .title-slide {
+            text-align: center;
+        }
+
+        .title-slide .slide-title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .title-slide .date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 2rem;
+        }
+
+        /* Arrow icon */
+        .arrow-down {
+            margin-top: 2rem;
+            opacity: 0.3;
+        }
+
+        /* Visual diagram - Efficacy bars */
+        .efficacy-bars {
+            margin-top: 2rem;
+        }
+
+        .efficacy-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .efficacy-label {
+            width: 100px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .efficacy-track {
+            flex: 1;
+            height: 36px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .efficacy-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .efficacy-fill.secondary {
+            background: var(--text-muted);
+        }
+
+        /* Take home message style */
+        .takeaway-box {
+            background: linear-gradient(135deg, var(--accent-dim), transparent);
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .takeaway-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .takeaway-text {
+            font-size: 1.3rem;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        .takeaway-text strong {
+            color: var(--accent);
+        }
+
+        /* Mobile menu toggle button */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            width: 48px;
+            height: 48px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 10px;
+            z-index: 1001;
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--text-primary);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* Mobile sidebar overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .nav-sidebar {
+                width: 240px;
+                min-width: 240px;
+            }
+
+            .slide-title {
+                font-size: 2.2rem;
+            }
+
+            .big-number {
+                font-size: 6rem;
+            }
+        }
+
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .sidebar-overlay {
+                display: block;
+            }
+
+            .nav-sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                height: 100%;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+
+            .nav-sidebar.active {
+                left: 0;
+            }
+
+            .slides-container {
+                width: 100%;
+            }
+
+            .slides-wrapper {
+                padding: 2rem 1.5rem;
+            }
+
+            .slide-title {
+                font-size: 1.8rem;
+            }
+
+            .title-slide .slide-title {
+                font-size: 2.2rem;
+            }
+
+            .slide-subtitle {
+                font-size: 1rem;
+            }
+
+            .big-number {
+                font-size: 4rem;
+            }
+
+            .big-number-unit {
+                font-size: 1.8rem;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-row {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .slide-counter {
+                top: 1.5rem;
+                right: 1.5rem;
+                font-size: 0.8rem;
+            }
+
+            .keyboard-hint {
+                display: none;
+            }
+
+            .hierarchy-item.secondary {
+                margin-left: 1rem;
+            }
+
+            .hierarchy-item.tertiary {
+                margin-left: 2rem;
+            }
+
+            .takeaway-box {
+                padding: 1.5rem;
+            }
+
+            .takeaway-number {
+                font-size: 2.5rem;
+            }
+
+            .takeaway-text {
+                font-size: 1.1rem !important;
+            }
+
+            .quote-text {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="presentation-container">
+        <!-- Navigation Sidebar -->
+        <nav class="nav-sidebar">
+            <div class="nav-header">
+                <h2>Revue de Presse</h2>
+                <div class="month">Décembre 2025</div>
+            </div>
+            <div class="nav-chapters" id="navChapters">
+                <!-- Generated by JS -->
+            </div>
+        </nav>
+
+        <!-- Main Slides Area -->
+        <main class="slides-container">
+            <div class="slide-counter">
+                <span class="current" id="currentSlide">1</span>/<span id="totalSlides">20</span>
+            </div>
+
+            <div class="slides-wrapper">
+                <!-- SLIDE 1: Title -->
+                <div class="slide active title-slide" data-chapter="intro">
+                    <div class="slide-label">Revue de Presse Médicale</div>
+                    <h1 class="slide-title">Actualités <span class="accent">Décembre 2025</span></h1>
+                    <p class="date">Médecine Générale</p>
+                    <p class="slide-subtitle">Diabète, pharmacovigilance, études clés : ce qu'il faut retenir pour la
+                        pratique quotidienne.</p>
+                    <div class="arrow-down">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 5v14M19 12l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Practice Changers Intro -->
+                <div class="slide" data-chapter="changers">
+                    <div class="slide-label">Practice Changers</div>
+                    <h1 class="slide-title">Ce qui <span class="accent">change</span> ce mois-ci</h1>
+                    <p class="slide-subtitle">Deux alertes majeures qui impactent directement nos prescriptions et
+                        conseils aux patients.</p>
+                </div>
+
+                <!-- SLIDE 3: DIU Jaydess -->
+                <div class="slide" data-chapter="changers">
+                    <div class="slide-label">Pharmacovigilance ANSM</div>
+                    <h1 class="slide-title">DIU Jaydess<br><span class="accent">Sur-risque GEU</span></h1>
+                    <p class="slide-subtitle">Étude EPIPHARE • DIU plus commercialisé depuis 2023 mais encore porté par
+                        certaines patientes</p>
+                </div>
+
+                <!-- SLIDE 4: Jaydess Numbers -->
+                <div class="slide" data-chapter="changers">
+                    <div class="slide-label">Risque comparé</div>
+                    <h1 class="slide-title">Incidence GEU pour 100 patientes-année</h1>
+                    <div class="comparison-grid">
+                        <div class="comparison-item highlight">
+                            <div class="comparison-value">0.18</div>
+                            <div class="comparison-label">Jaydess</div>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-value">0.04</div>
+                            <div class="comparison-label">Mirena</div>
+                        </div>
+                    </div>
+                    <p class="slide-subtitle" style="margin-top: 2rem; text-align: center;">DIU cuivre : 0.07/100 • Pas
+                        d'obligation de retrait, mais discussion nécessaire</p>
+                </div>
+
+                <!-- SLIDE 5: Diabète T2 - Big Change -->
+                <div class="slide" data-chapter="changers">
+                    <div class="slide-label">ADA 2026 • Changement majeur</div>
+                    <h1 class="slide-title">Diabète type 2<br><span class="accent">Nouvelle hiérarchie</span></h1>
+                    <p class="slide-subtitle">Les recommandations américaines placent iSGLT2 et aGLP1 en première ligne
+                        chez les patients à risque.</p>
+                </div>
+
+                <!-- SLIDE 6: New Hierarchy -->
+                <div class="slide" data-chapter="changers">
+                    <div class="slide-label">Hiérarchie thérapeutique 2026</div>
+                    <h1 class="slide-title">Patients à <span class="accent">haut risque CV</span></h1>
+                    <div class="hierarchy-visual">
+                        <div class="hierarchy-item primary">
+                            <div class="hierarchy-rank">1</div>
+                            <div class="hierarchy-name">iSGLT2 ou aGLP1</div>
+                        </div>
+                        <div class="hierarchy-item secondary">
+                            <div class="hierarchy-rank">2</div>
+                            <div class="hierarchy-name">Association si nécessaire</div>
+                        </div>
+                        <div class="hierarchy-item tertiary">
+                            <div class="hierarchy-rank">3</div>
+                            <div class="hierarchy-name">Metformine / iDPP4</div>
+                        </div>
+                    </div>
+                    <p class="slide-subtitle" style="margin-top: 1.5rem;">Prévention secondaire CV • IC • Néphropathie •
+                        Haut risque CV • Obésité</p>
+                </div>
+
+                <!-- SLIDE 7: Recommandations Intro -->
+                <div class="slide" data-chapter="recos">
+                    <div class="slide-label">Recommandations</div>
+                    <h1 class="slide-title">Consensus<br><span class="accent">HAS & Sociétés Savantes</span></h1>
+                    <p class="slide-subtitle">OMS sur les aGLP1 • ADA 2026 complet • Angio-œdèmes</p>
+                </div>
+
+                <!-- SLIDE 8: OMS GLP1 -->
+                <div class="slide" data-chapter="recos">
+                    <div class="slide-label">OMS • Obésité</div>
+                    <h1 class="slide-title">aGLP1 = traitement<br><span class="accent">au long cours</span></h1>
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-value">> 6 mois</div>
+                            <div class="stat-label">Durée minimale recommandée</div>
+                        </div>
+                    </div>
+                    <div class="takeaway-box" style="margin-top: 2rem;">
+                        <p class="takeaway-text" style="font-size: 1.2rem;"><strong>Intervention comportementale
+                                intensive obligatoire</strong></p>
+                        <p style="color: var(--text-secondary); margin-top: 0.75rem; font-size: 1rem;">Activité physique
+                            + rééquilibrage alimentaire + suivi régulier</p>
+                    </div>
+                    <p class="slide-subtitle" style="margin-top: 1.5rem;">Niveau de preuve modéré</p>
+                </div>
+
+                <!-- SLIDE 9: ADA Targets -->
+                <div class="slide" data-chapter="recos">
+                    <div class="slide-label">ADA 2026 • Objectifs</div>
+                    <h1 class="slide-title">Cibles <span class="accent">individualisées</span></h1>
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-title">HbA1c standard</div>
+                            <div class="card-value">
+                                < 7%</div>
+                                    <div class="card-desc">Majorité des patients</div>
+                            </div>
+                            <div class="card">
+                                <div class="card-title">Tension artérielle</div>
+                                <div class="card-value">
+                                    < 130/80</div>
+                                        <div class="card-desc">Idéalement sous IEC</div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-title">LDL prévention II</div>
+                                    <div class="card-value">
+                                        < 0.55</div>
+                                            <div class="card-desc">g/L • Statine forte + ézétimibe</div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-title">Dépistage coronarien</div>
+                                        <div class="card-value">NON</div>
+                                        <div class="card-desc"><strong style="color: var(--accent);">Si
+                                                asymptomatique</strong> • Grade A</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SLIDE 10: Angio-oedemes -->
+                            <div class="slide" data-chapter="recos">
+                                <div class="slide-label">Avis d'experts français</div>
+                                <h1 class="slide-title">Angio-œdème<br><span class="accent">bradykininique</span></h1>
+                                <ul class="slide-list">
+                                    <li>
+                                        <span class="list-number">01</span>
+                                        <div class="list-content">
+                                            <strong>Absence d'urticaire</strong>
+                                            <p>Pas de bronchospasme ni hypotension</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <span class="list-number">02</span>
+                                        <div class="list-content">
+                                            <strong>Évolution 2-5 jours</strong>
+                                            <p>Possibles douleurs abdominales</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <span class="list-number">03</span>
+                                        <div class="list-content">
+                                            <strong>Résistant aux traitements classiques</strong>
+                                            <p>Anti-H1, corticoïdes, adrénaline inefficaces</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <p class="slide-subtitle" style="margin-top: 1.5rem;">IEC contre-indiqués •
+                                    Contraception sans œstrogènes • Acide tranexamique inutile en crise</p>
+                            </div>
+
+                            <!-- SLIDE 11: Pharmacovigilance Intro -->
+                            <div class="slide" data-chapter="pharmaco">
+                                <div class="slide-label">Pharmacovigilance</div>
+                                <h1 class="slide-title"><span class="accent">aGLP1</span><br>Ce qu'on sait maintenant
+                                </h1>
+                                <p class="slide-subtitle">Risque cancer • Pathologies biliaires • Données sur l'arrêt du
+                                    traitement</p>
+                            </div>
+
+                            <!-- SLIDE 12: Cancer Risk -->
+                            <div class="slide" data-chapter="pharmaco">
+                                <div class="badge">✓ Données rassurantes</div>
+                                <h1 class="slide-title">aGLP1 et <span class="accent">risque cancer</span></h1>
+                                <p class="slide-subtitle" style="margin-bottom: 2rem;">Revue systématique • 90 000
+                                    patients • Essais randomisés</p>
+                                <div class="card-grid">
+                                    <div class="card">
+                                        <div class="card-title">Pancréas</div>
+                                        <div class="card-value" style="color: var(--text-secondary);">= placebo</div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-title">Thyroïde</div>
+                                        <div class="card-value" style="color: var(--text-secondary);">= placebo</div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-title">Sein</div>
+                                        <div class="card-value" style="color: var(--text-secondary);">= placebo</div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-title">Rein</div>
+                                        <div class="card-value" style="color: var(--text-secondary);">= placebo</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SLIDE 13: Biliary Risk -->
+                            <div class="slide" data-chapter="pharmaco">
+                                <div class="slide-label">Cohorte > 1 million de patients</div>
+                                <h1 class="slide-title">Pathologies <span class="accent">biliaires</span></h1>
+                                <p class="slide-subtitle">aGLP1 et iDPP4 augmentent légèrement le risque vs iSGLT2</p>
+                                <div class="quote-block" style="margin-top: 2rem;">
+                                    <p class="quote-text">Pas de sur-risque de pancréatite retrouvé dans cette étude</p>
+                                </div>
+                            </div>
+
+                            <!-- SLIDE 14: Tirzepatide Stop -->
+                            <div class="slide" data-chapter="pharmaco">
+                                <div class="slide-label">SURMOUNT-4 • Arrêt du traitement</div>
+                                <h1 class="slide-title">Arrêt Tirzépatide<br><span class="accent">Reprise de
+                                        poids</span></h1>
+                                <div class="big-number">82<span class="big-number-unit">%</span></div>
+                                <p class="big-number-label">des patients reprennent ≥25% du poids perdu</p>
+                                <p class="slide-subtitle" style="margin-top: 1rem;">+ Remontée IMC, PAS, HbA1c, LDL</p>
+                                <div class="takeaway-box" style="margin-top: 1.5rem;">
+                                    <p class="takeaway-text" style="font-size: 1.3rem;">→ <strong>Traitement à maintenir
+                                            au long cours</strong></p>
+                                </div>
+                            </div>
+
+                            <!-- SLIDE 15: Veille Intro -->
+                            <div class="slide" data-chapter="veille">
+                                <div class="slide-label">Veille Scientifique</div>
+                                <h1 class="slide-title">Les études<br><span class="accent">à connaître</span></h1>
+                                <p class="slide-subtitle">Cardiologie • Gastro • Néphro • Infectio • Onco • Rhumato</p>
+                            </div>
+
+                            <!-- SLIDE 16: Carotide -->
+                            <div class="slide" data-chapter="veille">
+                                <div class="slide-label">NEJM • Cardiologie</div>
+                                <h1 class="slide-title">Sténose carotide <span class="accent">>70%</span> asymptomatique
+                                </h1>
+                                <p class="slide-subtitle" style="margin-bottom: 1.5rem;">TMO = Traitement Médical
+                                    Optimisé <span style="color: var(--accent);">(statine + anti-agrégant)</span></p>
+                                <div class="comparison-grid">
+                                    <div class="comparison-item highlight">
+                                        <div class="comparison-value">Stent + TMO</div>
+                                        <div class="comparison-label">Réduit décès/AVC à 4 ans</div>
+                                    </div>
+                                    <div class="comparison-item">
+                                        <div class="comparison-value">Endartériectomie</div>
+                                        <div class="comparison-label">Pas de différence vs TMO seul</div>
+                                    </div>
+                                </div>
+                                <p class="slide-subtitle" style="margin-top: 2rem; text-align: center;">NNT = 32 •
+                                    Patients ~70 ans • Discussion avec vasculaires</p>
+                            </div>
+
+                            <!-- SLIDE 17: Statines âgés -->
+                            <div class="slide" data-chapter="veille">
+                                <div class="slide-label">Cohorte • Gériatrie</div>
+                                <h1 class="slide-title">Statines chez le<br><span class="accent">sujet âgé dément</span>
+                                </h1>
+                                <p class="slide-subtitle" style="margin-bottom: 1.5rem;">Patients > 80 ans en EHPAD avec
+                                    troubles cognitifs</p>
+                                <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+                                    <div class="card">
+                                        <div class="card-title">Prévention primaire</div>
+                                        <div class="card-value"
+                                            style="font-size: 1.5rem; color: var(--text-secondary);">↑ Hospitalisation
+                                        </div>
+                                        <div class="card-desc">Toutes causes et CV</div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-title">Bénéfice retrouvé</div>
+                                        <div class="card-value"
+                                            style="font-size: 1.5rem; color: var(--text-secondary);">Aucun</div>
+                                        <div class="card-desc">Dans cette population</div>
+                                    </div>
+                                </div>
+                                <div class="takeaway-box" style="margin-top: 1.5rem;">
+                                    <p class="takeaway-text" style="font-size: 1.3rem;">→ <strong>Déprescription à
+                                            envisager</strong></p>
+                                </div>
+                            </div>
+
+                            <!-- SLIDE 18: Epaule -->
+                            <div class="slide" data-chapter="veille">
+                                <div class="slide-label">BMJ • Rhumatologie • 10 ans de suivi</div>
+                                <h1 class="slide-title">Syndrome douloureux<br><span class="accent">sous-acromial</span>
+                                </h1>
+                                <p class="slide-subtitle" style="margin-bottom: 1.5rem;">Essai randomisé : 3 bras
+                                    comparés sur la douleur</p>
+                                <div class="hierarchy-visual">
+                                    <div class="hierarchy-item">
+                                        <div class="hierarchy-name">Décompression arthroscopique (chirurgie vraie)</div>
+                                    </div>
+                                    <div class="hierarchy-item">
+                                        <div class="hierarchy-name">Arthroscopie sans geste (chirurgie placebo)</div>
+                                    </div>
+                                    <div class="hierarchy-item">
+                                        <div class="hierarchy-name">Rééducation seule</div>
+                                    </div>
+                                </div>
+                                <div class="takeaway-box" style="margin-top: 1.5rem;">
+                                    <p class="takeaway-text" style="font-size: 1.2rem;"><strong>Aucune différence
+                                            significative</strong> sur la douleur à 10 ans</p>
+                                    <p style="color: var(--text-secondary); margin-top: 0.75rem; font-size: 1rem;">→
+                                        Rééducation = 1ère intention</p>
+                                </div>
+                            </div>
+
+                            <!-- SLIDE 19: Vaccin VRS -->
+                            <div class="slide" data-chapter="veille">
+                                <div class="slide-label">Infectiologie</div>
+                                <h1 class="slide-title">Vaccin VRS<br><span class="accent">Efficacité
+                                        décroissante</span></h1>
+                                <div class="efficacy-bars">
+                                    <div class="efficacy-bar">
+                                        <div class="efficacy-label">1 mois</div>
+                                        <div class="efficacy-track">
+                                            <div class="efficacy-fill" style="width: 82%;">82%</div>
+                                        </div>
+                                    </div>
+                                    <div class="efficacy-bar">
+                                        <div class="efficacy-label">18 mois</div>
+                                        <div class="efficacy-track">
+                                            <div class="efficacy-fill secondary" style="width: 59%;">59%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="slide-subtitle" style="margin-top: 2rem;">Hospitalisations : 89% → 57% •
+                                    Question des rappels • Vaccin non remboursé</p>
+                            </div>
+
+                            <!-- SLIDE 20: Take Home 1 -->
+                            <div class="slide" data-chapter="takeaway">
+                                <div class="slide-label">Take Home Message</div>
+                                <div class="takeaway-box">
+                                    <div class="takeaway-number">01</div>
+                                    <p class="takeaway-text"><strong>iSGLT2 et aGLP1 en 1ère ligne</strong> chez les
+                                        diabétiques à risque CV. La metformine passe en 3ème ligne.</p>
+                                </div>
+                            </div>
+
+                            <!-- SLIDE 21: Take Home 2 -->
+                            <div class="slide" data-chapter="takeaway">
+                                <div class="slide-label">Take Home Message</div>
+                                <div class="takeaway-box">
+                                    <div class="takeaway-number">02</div>
+                                    <p class="takeaway-text"><strong>DIU Jaydess</strong> : vérifier le type de DIU,
+                                        informer du sur-risque GEU, discussion partagée.</p>
+                                </div>
+                            </div>
+
+                            <!-- SLIDE 22: Take Home 3 -->
+                            <div class="slide" data-chapter="takeaway">
+                                <div class="slide-label">Take Home Message</div>
+                                <div class="takeaway-box">
+                                    <div class="takeaway-number">03</div>
+                                    <p class="takeaway-text"><strong>Questionner le bénéfice/risque</strong> : statines
+                                        chez le sujet âgé dément, chirurgie de l'épaule... même les pratiques établies
+                                        méritent d'être réévaluées.</p>
+                                </div>
+                            </div>
+
+                            <!-- SLIDE 23: Bibliographie -->
+                            <div class="slide" data-chapter="fin">
+                                <div class="slide-label">Sources</div>
+                                <h1 class="slide-title"><span class="accent">Bibliographie</span></h1>
+                                <ul class="slide-list" style="margin-top: 1.5rem;">
+                                    <li>
+                                        <span class="list-number">01</span>
+                                        <div class="list-content">
+                                            <strong>Dr Agibus</strong>
+                                            <p>Dragi Webdo n°506 : dépistages (CNGE), Jaydess/GEU (ANSM), sténose
+                                                carotidienne, sensibilité au gluten, albuminurie, vaccin VRS,
+                                                tirzépatide. Médicalement Geek. 2025 Dec 1.</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <span class="list-number">02</span>
+                                        <div class="list-content">
+                                            <strong>Dr Agibus</strong>
+                                            <p>Dragi Webdo n°507 : EBiM, analogues du GLP-1 (OMS), évolocumab,
+                                                statines/sujet âgé, vaccin HPV, épaule douloureuse, hydrocéphalie.
+                                                Médicalement Geek. 2025 Dec 8.</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <span class="list-number">03</span>
+                                        <div class="list-content">
+                                            <strong>Dr Agibus</strong>
+                                            <p>Dragi Webdo n°508 : diabète (recos US), hyperemesis gravidarum, dépistage
+                                                cancer du sein, angioedèmes, aGLP1/cancers, méthadone. Médicalement
+                                                Geek. 2025 Dec 16.</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <span class="list-number">04</span>
+                                        <div class="list-content">
+                                            <strong>Stigler F.</strong>
+                                            <p>Golden Nuggets of Family Medicine #17. 2025 Dec 11.</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="keyboard-hint">
+                            <span class="key">←</span>
+                            <span class="key">→</span>
+                            <span>pour naviguer</span>
+                        </div>
+        </main>
+    </div>
+
+    <script>
+        // Chapter definitions
+        const chapters = [
+            { id: 'intro', name: 'Introduction', slides: [0] },
+            { id: 'changers', name: 'Practice Changers', slides: [1, 2, 3, 4, 5] },
+            { id: 'recos', name: 'Recommandations', slides: [6, 7, 8, 9] },
+            { id: 'pharmaco', name: 'Pharmacovigilance', slides: [10, 11, 12, 13] },
+            { id: 'veille', name: 'Veille Scientifique', slides: [14, 15, 16, 17, 18] },
+            { id: 'takeaway', name: 'Take Home', slides: [19, 20, 21] },
+            { id: 'fin', name: 'Bibliographie', slides: [22] }
+        ];
+
+        // DOM Elements
+        const slides = document.querySelectorAll('.slide');
+        const navChapters = document.getElementById('navChapters');
+        const currentSlideEl = document.getElementById('currentSlide');
+        const totalSlidesEl = document.getElementById('totalSlides');
+
+        let currentIndex = 0;
+
+        // Initialize
+        function init() {
+            totalSlidesEl.textContent = slides.length;
+            buildNavigation();
+            updateSlide();
+        }
+
+        // Build navigation sidebar
+        function buildNavigation() {
+            chapters.forEach(chapter => {
+                const div = document.createElement('div');
+                div.className = 'nav-chapter';
+                div.dataset.chapter = chapter.id;
+                div.innerHTML = `
+                    <div class="chapter-indicator"></div>
+                    <span class="chapter-name">${chapter.name}</span>
+                `;
+                div.addEventListener('click', () => goToChapter(chapter.id));
+                navChapters.appendChild(div);
+            });
+        }
+
+        // Update slide display
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentIndex);
+            });
+            currentSlideEl.textContent = currentIndex + 1;
+            updateNavigation();
+        }
+
+        // Update navigation highlighting
+        function updateNavigation() {
+            const currentChapterId = slides[currentIndex].dataset.chapter;
+            document.querySelectorAll('.nav-chapter').forEach(nav => {
+                nav.classList.toggle('active', nav.dataset.chapter === currentChapterId);
+            });
+        }
+
+        // Navigate to specific slide
+        function goToSlide(index) {
+            if (index >= 0 && index < slides.length) {
+                currentIndex = index;
+                updateSlide();
+            }
+        }
+
+        // Navigate to chapter
+        function goToChapter(chapterId) {
+            const chapter = chapters.find(c => c.id === chapterId);
+            if (chapter && chapter.slides.length > 0) {
+                goToSlide(chapter.slides[0]);
+            }
+        }
+
+        // Next slide
+        function nextSlide() {
+            if (currentIndex < slides.length - 1) {
+                currentIndex++;
+                updateSlide();
+            }
+        }
+
+        // Previous slide
+        function prevSlide() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateSlide();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                goToSlide(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                goToSlide(slides.length - 1);
+            }
+        });
+
+        // Click navigation on slides
+        document.querySelector('.slides-wrapper').addEventListener('click', (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            if (x > rect.width / 2) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+        });
+
+        // Touch navigation
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        });
+
+        // Mobile menu functionality
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const navSidebar = document.querySelector('.nav-sidebar');
+
+        function toggleMobileMenu() {
+            mobileMenuToggle.classList.toggle('active');
+            navSidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+            document.body.style.overflow = navSidebar.classList.contains('active') ? 'hidden' : '';
+        }
+
+        function closeMobileMenu() {
+            mobileMenuToggle.classList.remove('active');
+            navSidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+        sidebarOverlay.addEventListener('click', closeMobileMenu);
+
+        // Close menu when navigating to a chapter on mobile
+        document.querySelectorAll('.nav-chapter').forEach(chapter => {
+            chapter.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+
+</html>
